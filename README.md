@@ -53,11 +53,11 @@ Utterances:
 
 ### Test Cases
 
-Incorrect Amount: <div style="text-align: left"><img src="./images/incorrect_amount.png" width="500" /></div>
+Incorrect Amount: <div style="text-align: left"><img src="./images/incorrect_amount.png" width="800" /></div>
 
-Negative Age: <div style="text-align: left"><img src="./images/neg_age.png" width="500" /></div>
+Negative Age: <div style="text-align: left"><img src="./images/neg_age.png" width="800" /></div>
 
-Too High of an Age: <div style="text-align: left"><img src="./images/age_error.png" width="500" /></div>
+Too High of an Age: <div style="text-align: left"><img src="./images/age_error.png" width="800" /></div>
 
 Correct Info: <div style="text-align: left"><img src="./images/correct_dialogue.png" width="500" /></div>
 
