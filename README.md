@@ -38,28 +38,28 @@ The bot stores this information and recommends a split of bonds (AGG) and/or sto
 ### Bot Set Up
 
 Slots:
-<div style="text-align: left"><img src="./images/slots.png" width="400" /></div>
+<div style="text-align: left"><img src="./images/slots.png" width="600" /></div>
 
 Utterances:
-<div style="text-align: left"><img src="./images/utterances.png" width="400" /></div>
+<div style="text-align: left"><img src="./images/utterances.png" width="600" /></div>
 
 
 ### Helper Functions
-<div style="text-align: left"><img src="./images/validation_function.png" width="400" /></div>
-<div style="text-align: left"><img src="./images/recommendation_function.png" width="400" /></div>
+<div style="text-align: left"><img src="./images/validation_function.png" width="600" /></div>
+<div style="text-align: left"><img src="./images/recommendation_function.png" width="600" /></div>
 
 ### Lambda Function
-<div style="text-align: left"><img src="./images/full_function.png" width="400" /></div>
+<div style="text-align: left"><img src="./images/full_function.png" width="600" /></div>
 
 ### Test Cases
 
-Incorrect Amount: <div style="text-align: left"><img src="./images/incorrect_amount.png" width="200" /></div>
+Incorrect Amount: <div style="text-align: left"><img src="./images/incorrect_amount.png" width="500" /></div>
 
-Negative Age: <div style="text-align: left"><img src="./images/neg_age.png" width="200" /></div>
+Negative Age: <div style="text-align: left"><img src="./images/neg_age.png" width="500" /></div>
 
-Too High of an Age: <div style="text-align: left"><img src="./images/age_error.png" width="200" /></div>
+Too High of an Age: <div style="text-align: left"><img src="./images/age_error.png" width="500" /></div>
 
-Correct Info: <div style="text-align: left"><img src="./images/correct_dialogue.png" width="200" /></div>
+Correct Info: <div style="text-align: left"><img src="./images/correct_dialogue.png" width="500" /></div>
 
 
 ### Recommendation Display
