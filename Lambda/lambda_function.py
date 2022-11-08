@@ -1,6 +1,7 @@
 ### Required Libraries ###
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from botocore.vendored import requests
 
 ### Functionality Helper Functions ###
 def parse_int(n):
@@ -9,6 +10,15 @@ def parse_int(n):
     """
     try:
         return int(n)
+    except ValueError:
+        return float("nan")
+        
+def parse_float(n):
+    """
+    Securely converts a non-numeric value to float.
+    """
+    try:
+        return float(n)
     except ValueError:
         return float("nan")
 
@@ -59,7 +69,7 @@ def delegate(session_attributes, slots):
 
     return {
         "sessionAttributes": session_attributes,
-        "dialogAction": {"type": "Delegate", "slots": slots},
+        "dialogAction": {"type": "Delegate", "slots": slots}
     }
 
 
@@ -73,12 +83,67 @@ def close(session_attributes, fulfillment_state, message):
         "dialogAction": {
             "type": "Close",
             "fulfillmentState": fulfillment_state,
-            "message": message,
-        },
+            "message": message
+        }
     }
 
     return response
 
+## Validate data
+def validate_data(age, investment_amount, risk_level, intent_request):
+    # Validate that the user is over 21 years old
+    if age is not None:
+        if age < 21 or age > 65:
+            return build_validation_result(
+                False,
+                "age",
+                f"You entered {age}. You should need to be 21 years old "
+                " or less than 65 years old to use this service, "
+                "please come back when you are 21 or enter a different age."
+            )
+    # Validate the investment amount, it should be >= 5000
+    if investment_amount is not None:
+        investment_amount = parse_int(
+            investment_amount
+        )  # Since parameters are strings it's important to cast values
+        if investment_amount < 5000:
+            return build_validation_result(
+                False,
+                "investment_amount",
+                "The amount to convert should be greater than or equal to 5000, "
+                "please provide a sufficient amount for a recommendation.",
+            )
+            
+    # Validate risk level        
+    if risk_level is not None:
+        if risk_level not in ['None', 'Low', 'Medium', 'High']:
+            return build_validation_result(
+                False,
+                "risk_level",
+                "You must eneter either None, Low, Medium, or High ",
+                )        
+    
+    return build_validation_result(True, None, None)
+
+
+    
+def get_recommendation(risk_level):
+    """
+    Returns a recommendation for a mixture of stocks based on the risk level
+    """
+    risk_level = str(risk_level).title()
+    recommendation = ""
+    if risk_level == 'None':
+        recommendation = f"A mixture of 100% bonds (AGG), 0% equities (SPY) is recommended for having no risk tolerance."
+    elif risk_level == 'Low':
+        recommendation = f"A mixture of 60% bonds (AGG), 40% equities (SPY) is recommended for a {risk_level} risk level."
+    elif risk_level == 'Medium':
+        recommendation = f"A mixture of 40% bonds (AGG), 60% equities (SPY) is recommended for a {risk_level} risk level."
+    elif risk_level == 'High':
+        recommendation = f"A mixture of 20% bonds (AGG), 80% equities (SPY) is recommended for a {risk_level} risk level."
+    else:
+        recommendation = "Please enter either None, Low, Medium or High"
+    return recommendation  
 
 """
 Step 3: Enhance the Robo Advisor with an Amazon Lambda Function
@@ -111,8 +176,8 @@ In this section, you will create an Amazon Lambda function that will validate th
 
 """
 
-
 ### Intents Handlers ###
+
 def recommend_portfolio(intent_request):
     """
     Performs dialog management and fulfillment for recommending a portfolio.
@@ -122,9 +187,62 @@ def recommend_portfolio(intent_request):
     age = get_slots(intent_request)["age"]
     investment_amount = get_slots(intent_request)["investmentAmount"]
     risk_level = get_slots(intent_request)["riskLevel"]
+    
+    #Parse into integers
+    age = parse_int(age)
+    investment_amount = parse_int(investment_amount)
+    
+    #Make the risk level title case
+    risk_level = str(risk_level).title()
+    
+    
+    # Gets the invocation source, for Lex dialogs "DialogCodeHook" is expected.
     source = intent_request["invocationSource"]
+    
+    if source == "DialogCodeHook":
+        # This code performs basic validation on the supplied input slots.
 
-    # YOUR CODE GOES HERE!
+        # Gets all the slots
+        slots = get_slots(intent_request)
+
+        # Validates user's input using the validate_data function
+        validation_result = validate_data(age, investment_amount, risk_level, intent_request)
+
+        # If the data provided by the user is not valid,
+        # the elicitSlot dialog action is used to re-prompt for the first violation detected.
+        if not validation_result["isValid"]:
+            slots[validation_result["violatedSlot"]] = None  # Cleans invalid slot
+
+            # Returns an elicitSlot dialog to request new data for the invalid slot
+            return elicit_slot(
+                intent_request["sessionAttributes"],
+                intent_request["currentIntent"]["name"],
+                slots,
+                validation_result["violatedSlot"],
+                validation_result["message"],
+            )
+            
+        # Validates user's input using the validate_data function
+        # Fetch current session attributes
+        output_session_attributes = intent_request["sessionAttributes"]
+
+        # Once all slots are valid, a delegate dialog is returned to Lex to choose the next course of action.
+        return delegate(output_session_attributes, get_slots(intent_request))
+
+    # Return a message with conversion's result.
+    return close(
+        intent_request["sessionAttributes"],
+        "Fulfilled",
+        {
+            "contentType": "PlainText",
+            "content": """Thank you for your information;
+            {}
+            """.format(
+                get_recommendation(risk_level)
+            ),
+        },
+    )
+
 
 
 ### Intents Dispatcher ###
