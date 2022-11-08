@@ -51,6 +51,17 @@ Utterances:
 ### Lambda Function
 <div style="text-align: left"><img src="./images/full_function.png" width="400" /></div>
 
+### Test Cases
+
+Incorrect Amount: <div style="text-align: left"><img src="./images/incorrect_amount.png" width="200" /></div>
+
+Negative Age: <div style="text-align: left"><img src="./images/neg_age.png" width="200" /></div>
+
+Too High of an Age: <div style="text-align: left"><img src="./images/age_error.png" width="200" /></div>
+
+Correct Info: <div style="text-align: left"><img src="./images/correct_dialogue.png" width="200" /></div>
+
+
 ### Recommendation Display
 <div style="text-align: left"><img src="./images/final_rec.png" width="300" /></div>
 
